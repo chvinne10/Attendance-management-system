@@ -1,18 +1,120 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Face Recognition Attendance</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriGuard+ Attendance System</title>
     <style>
-        body { font-family: Arial; text-align: center; background: #f4f4f4; }
-        .container { margin-top: 50px; }
-        img { border: 5px solid #333; border-radius: 10px; width: 80%; max-width: 800px; }
+        :root { --primary: #2e7d32; --secondary: #1976d2; --dark: #333; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: #f0f2f5; }
+        
+        /* Navigation Bar */
+        nav { background: var(--dark); color: white; padding: 1rem; text-align: center; font-size: 1.5rem; font-weight: bold; }
+
+        /* Dashboard Buttons */
+        .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; padding: 40px; max-width: 1000px; margin: auto; }
+        .card { background: white; padding: 20px; border-radius: 10px; text-align: center; cursor: pointer; transition: 0.3s; border-bottom: 5px solid var(--primary); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
+        .card h3 { margin: 10px 0; color: var(--dark); }
+
+        /* Screens (Hidden by default) */
+        .screen { display: none; padding: 20px; max-width: 1100px; margin: auto; }
+        .active { display: block; }
+
+        /* Form Styling */
+        .form-group { margin-bottom: 15px; }
+        input, select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        button { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 5px; cursor: pointer; width: 100%; font-size: 1rem; }
+        .btn-back { background: #666; margin-bottom: 20px; width: auto; }
+
+        /* Table Styling */
+        table { width: 100%; border-collapse: collapse; background: white; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background: var(--primary); color: white; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Face Recognition Attendance System</h1>
-        <p>Position your face in front of the camera</p>
-        <img src="{{ url_for('video_feed') }}">
+
+<nav>Face Recognition Attendance System</nav>
+
+<div id="home" class="screen active">
+    <div class="dashboard">
+        <div class="card" onclick="showScreen('registration')">
+            <h3>Register Student</h3>
+            <p>Capture face & details</p>
+        </div>
+        <div class="card" onclick="showScreen('student-details')">
+            <h3>Student Database</h3>
+            <p>View/Edit Records</p>
+        </div>
+        <div class="card" onclick="showScreen('face-detector')">
+            <h3>Mark Attendance</h3>
+            <p>Open Camera</p>
+        </div>
+        <div class="card" onclick="window.open('/download-attendance')">
+            <h3>Attendance Log</h3>
+            <p>Download CSV</p>
+        </div>
     </div>
+</div>
+
+<div id="registration" class="screen">
+    <button class="btn-back" onclick="showScreen('home')">← Back to Dashboard</button>
+    <div style="display: flex; gap: 20px; background: white; padding: 20px; border-radius: 10px;">
+        <div style="flex: 1;">
+            <h3>New Registration</h3>
+            <form action="/register_student" method="POST">
+                <input type="text" name="name" placeholder="Full Name" required>
+                <input type="text" name="roll" placeholder="Roll Number" required>
+                <select name="dept">
+                    <option>Computer Science</option>
+                    <option>Mechanical</option>
+                    <option>Civil</option>
+                </select>
+                <button type="submit" style="margin-top: 20px;">Capture & Save</button>
+            </form>
+        </div>
+        <div style="flex: 1; background: #000; display: flex; align-items: center; justify-content: center; color: white;">
+            Webcam Feed for Capture
+        </div>
+    </div>
+</div>
+
+<div id="student-details" class="screen">
+    <button class="btn-back" onclick="showScreen('home')">← Back</button>
+    <h3>Registered Students</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Roll</th>
+                <th>Dept</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="student-table-body">
+            </tbody>
+    </table>
+</div>
+
+<div id="face-detector" class="screen">
+    <button class="btn-back" onclick="showScreen('home')">← Back</button>
+    <div style="text-align: center;">
+        <h3>Live Attendance Mode</h3>
+        <img src="{{ url_for('video_feed') }}" style="width: 70%; border: 10px solid #333; border-radius: 10px;">
+        <p>System is scanning for faces...</p>
+    </div>
+</div>
+
+<script>
+    function showScreen(screenId) {
+        // Hide all screens
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        // Show selected screen
+        document.getElementById(screenId).classList.add('active');
+    }
+</script>
+
 </body>
 </html>
